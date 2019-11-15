@@ -1,39 +1,51 @@
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Scanner;
-import static java.lang.System.*;
+import java.io.*;
+import java.util.*;
 
-public class sockExchange
-{
+public class sockExchange {
+    private static int numOfStudents = 80;
+
     public static void main(String[] args) throws IOException {
-        int numOfStudents = 80;
+        boolean repeated = true;
+        int x = 0;
 
-        PrintWriter writer = new PrintWriter("names.txt", "UTF-8");
+        PrintWriter writer = new PrintWriter("namesOUT.txt", "UTF-8");
 
-        for (int x = 0; x < 2; x++) {
-            Scanner f = new Scanner(new File("students.dat"));
-            Integer[] arr = new Integer[numOfStudents];
-            String[] names = new String[numOfStudents];
+        String[] names1 = makeList("namesIN.dat");
+        String[] names2 = makeList("namesIN.dat");
 
-            for (int i = 0; i < arr.length; i++) {
-                arr[i] = i;
-            }
-            Collections.shuffle(Arrays.asList(arr));
-
+        while(repeated == true) {
             for (int i = 0; i < numOfStudents; i++) {
-                String studentName = f.nextLine();
-                String studentNumber = arr[i].toString();
-                names[arr[i]] = studentName;
+                if (names1[i].equals(names2[i])) {
+                    Collections.shuffle(Arrays.asList(names2));
+                }
             }
-
             for (int i = 0; i < numOfStudents; i++) {
-
-                writer.println(names[i] + "  -  " + names[++i]);
+                if (!(names1[i].equals(names2[i]))) {
+                    x++;
+                }
             }
-            writer.close();
+            if (x == 80) {
+                repeated = false;
+            }
         }
+
+        for (int i = 0; i < numOfStudents; i++) {
+            writer.printf("%-17s - %s\n", names1[i], names2[i]);
+        }
+
+        writer.close();
+    }
+
+    public static String[] makeList(String path) throws IOException {
+        Scanner f = new Scanner(new File(path));
+        String[] names = new String[numOfStudents];
+
+        for (int i = 0; i < numOfStudents; i++) {
+            String studentName = f.nextLine();
+
+            names[i] = studentName;
+        }
+
+        return names;
     }
 }
